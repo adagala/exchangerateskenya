@@ -1,19 +1,59 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * import {onCall} from "firebase-functions/v2/https";
- * import {onDocumentWritten} from "firebase-functions/v2/firestore";
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
-
 import { onRequest } from 'firebase-functions/v2/https';
-import * as logger from 'firebase-functions/logger';
+import { onSchedule } from 'firebase-functions/v2/scheduler';
+import * as admin from 'firebase-admin';
+admin.initializeApp();
 
-// Start writing functions
-// https://firebase.google.com/docs/functions/typescript
+export const getRates = onRequest(
+  { secrets: ['FIXER_API_KEY'], maxInstances: 5 },
+  async (_request, response) => {
+    const ratesReponse = await fetch(
+      `http://data.fixer.io/api/latest?access_key=${process.env.FIXER_API_KEY}&symbols=KES,GBP,JPY,USD`,
+    );
+    const ratesResult = await ratesReponse.json();
 
-// export const helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+    const formatCurrency = (value: number) => parseFloat(value.toFixed(2));
+    const baseAsKenya = {
+      timestamp: ratesResult.timestamp,
+      date: ratesResult.date,
+      rates: {
+        EUR: formatCurrency(ratesResult.rates.KES),
+        GBP: formatCurrency(ratesResult.rates.KES / ratesResult.rates.GBP),
+        JPY: formatCurrency(ratesResult.rates.KES / ratesResult.rates.JPY),
+        USD: formatCurrency(ratesResult.rates.KES / ratesResult.rates.USD),
+      },
+    };
+
+    await admin.firestore().doc(`rates/${baseAsKenya.date}`).set(baseAsKenya);
+    response.send(baseAsKenya);
+  },
+);
+
+export const getDailyRates = onSchedule(
+  {
+    schedule: '0 9 * * *',
+    maxInstances: 5,
+    secrets: ['FIXER_API_KEY'],
+    timeZone: 'Africa/Nairobi',
+  },
+  async () => {
+    const ratesReponse = await fetch(
+      `http://data.fixer.io/api/latest?access_key=${process.env.FIXER_API_KEY}&symbols=KES,GBP,JPY,USD`,
+    );
+    const ratesResult = await ratesReponse.json();
+
+    const formatCurrency = (value: number) => parseFloat(value.toFixed(2));
+    const baseAsKenya = {
+      timestamp: ratesResult.timestamp,
+      date: ratesResult.date,
+      rates: {
+        EUR: formatCurrency(ratesResult.rates.KES),
+        GBP: formatCurrency(ratesResult.rates.KES / ratesResult.rates.GBP),
+        JPY: formatCurrency(ratesResult.rates.KES / ratesResult.rates.JPY),
+        USD: formatCurrency(ratesResult.rates.KES / ratesResult.rates.USD),
+      },
+    };
+
+    await admin.firestore().doc(`rates/${baseAsKenya.date}`).set(baseAsKenya);
+    return;
+  },
+);
