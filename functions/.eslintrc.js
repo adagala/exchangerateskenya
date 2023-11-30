@@ -25,7 +25,8 @@ module.exports = {
     'quote-props': ['error', 'as-needed'],
     quotes: ['error', 'single'],
     'import/no-unresolved': 0,
-    indent: ['error', 2],
+    indent: ['error', 2, { SwitchCase: 1 }],
     'object-curly-spacing': ['error', 'always'],
+    'max-len': ['error', { ignoreStrings: true, ignoreTemplateLiterals: true }],
   },
 };
