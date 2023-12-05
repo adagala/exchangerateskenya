@@ -19,7 +19,7 @@ export const formatDate = (value: Date) => {
 };
 
 const nthDate = (d: number) => {
-  if (d > 3 && d < 21) return 'th';
+  if (d > 3 && d < 21) return `${d}th`;
   switch (d % 10) {
     case 1:
       return `${d}st`;
@@ -30,4 +30,10 @@ const nthDate = (d: number) => {
     default:
       return `${d}th`;
   }
+};
+
+export const formatTime = (date: Date) => {
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  return `${hours}:${minutes}`;
 };
