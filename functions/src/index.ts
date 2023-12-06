@@ -33,7 +33,7 @@ export const getRates = onRequest(
 
 export const getDailyRates = onSchedule(
   {
-    schedule: '0 4-16/4 * * *',
+    schedule: '0 8-16/4 * * *',
     maxInstances: 5,
     secrets: [
       'FIXER_API_KEY',
