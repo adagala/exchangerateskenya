@@ -70,8 +70,9 @@ export const getDailyRates = onSchedule(
       accessSecret: process.env.TWITTER_ACCESS_SECRET as string,
       accessToken: process.env.TWITTER_ACCESS_TOKEN as string,
     });
-    const displayDate = formatDate(new Date());
-    const displayTime = formatTime(new Date());
+    const eastAfricanTime = new Date(new Date().getTime() + 3 * 60 * 60 * 1000);
+    const displayDate = formatDate(eastAfricanTime);
+    const displayTime = formatTime(eastAfricanTime);
     const tweetText = `Today's exchange rates against the Kenyan shilling (${displayDate} ${displayTime}): \n\nUSD ($): ${baseAsKenya.rates.USD}\nEUR (€): ${baseAsKenya.rates.EUR}\nGBP (£): ${baseAsKenya.rates.GBP}\nJPY (¥): ${baseAsKenya.rates.JPY}`;
     await twitterClient.v2.tweet(tweetText);
 
