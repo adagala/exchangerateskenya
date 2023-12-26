@@ -17,7 +17,8 @@ const tweet = async () => {
   );
   const ratesResult = await ratesReponse.json();
 
-  const formatCurrency = (value: number) => parseFloat(value.toFixed(2));
+  const formatCurrency = (value: number) =>
+    (Math.round(value * 100) / 100).toFixed(2);
   const baseAsKenya = {
     timestamp: ratesResult.timestamp,
     date: ratesResult.date,
@@ -39,7 +40,7 @@ const tweet = async () => {
 
   const displayDate = formatDate(new Date());
   const displayTime = formatTime(new Date());
-  const tweetText = `Today's exchange rates against the Kenyan shilling (${displayDate} ${displayTime}): \n\nUSD ($): ${baseAsKenya.rates.USD}\nEUR (€): ${baseAsKenya.rates.EUR}\nGBP (£): ${baseAsKenya.rates.GBP}\nJPY (¥): ${baseAsKenya.rates.JPY}`;
+  const tweetText = `Today's exchange rates against the Kenyan shilling (${displayDate} ${displayTime}): \n\nUSD ($): ${baseAsKenya.rates.USD}\nEUR (€): ${baseAsKenya.rates.EUR}\nGBP (£): ${baseAsKenya.rates.GBP}\nJPY (¥): ${baseAsKenya.rates.JPY}\n\n https://exchangerateskenya.web.app/`;
   await twitterClient.v2.tweet(tweetText);
   console.log(tweetText);
 };

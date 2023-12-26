@@ -14,7 +14,8 @@ export const getRates = onRequest(
     );
     const ratesResult = await ratesReponse.json();
 
-    const formatCurrency = (value: number) => parseFloat(value.toFixed(2));
+    const formatCurrency = (value: number) =>
+      (Math.round(value * 100) / 100).toFixed(2);
     const baseAsKenya = {
       timestamp: ratesResult.timestamp,
       date: ratesResult.date,
@@ -50,7 +51,8 @@ export const getDailyRates = onSchedule(
     );
     const ratesResult = await ratesReponse.json();
 
-    const formatCurrency = (value: number) => parseFloat(value.toFixed(2));
+    const formatCurrency = (value: number) =>
+      (Math.round(value * 100) / 100).toFixed(2);
     const baseAsKenya = {
       timestamp: ratesResult.timestamp,
       date: ratesResult.date,
@@ -73,7 +75,7 @@ export const getDailyRates = onSchedule(
     const eastAfricanTime = new Date(new Date().getTime() + 3 * 60 * 60 * 1000);
     const displayDate = formatDate(eastAfricanTime);
     const displayTime = formatTime(eastAfricanTime);
-    const tweetText = `Today's exchange rates against the Kenyan shilling (${displayDate} ${displayTime}): \n\nUSD ($): ${baseAsKenya.rates.USD}\nEUR (€): ${baseAsKenya.rates.EUR}\nGBP (£): ${baseAsKenya.rates.GBP}\nJPY (¥): ${baseAsKenya.rates.JPY}`;
+    const tweetText = `Today's exchange rates against the Kenyan shilling (${displayDate} ${displayTime}): \n\nUSD ($): ${baseAsKenya.rates.USD}\nEUR (€): ${baseAsKenya.rates.EUR}\nGBP (£): ${baseAsKenya.rates.GBP}\nJPY (¥): ${baseAsKenya.rates.JPY}\n\n https://exchangerateskenya.web.app/`;
     await twitterClient.v2.tweet(tweetText);
 
     return;
